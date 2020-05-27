@@ -1,0 +1,98 @@
+---
+title: "Eventos Cardiovasculares"
+author: "Grupo 10"
+date: "5/21/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduccion
+
+HACER INTRODUCCION
+
+## Hipotesis
+
+Enumerar los querys que hicimos(notas)
+
+```{r datosGenerales, include=FALSE}
+library(readr)
+dataset <- read_csv("C:/Users/nicow/Downloads/dataset.csv")
+dataset<-as.data.frame(dataset)
+eventos <- sum(dataset$Evento)
+mujeres <- (1002 - sum(dataset$Género))
+hombres <- sum(dataset$Género)
+antecedentesFamiliares <- sum(dataset$AHF)
+cantEpisodios <- sum(dataset$CantE)
+fumadores <- sum(dataset$TBQ)
+presentaHipertension <- sum(dataset$HTA)
+obeso <- sum(dataset$OBES)
+revascularizacion <- sum(dataset$SCApHR)
+
+#edades <- dataset[dataset$Edad]
+edad1760 <- dataset[which(dataset$Edad < 40 & dataset$Edad >= 16), ]
+
+edad4060 <- dataset[which(dataset$Edad < 60 & dataset$Edad >= 40), ]
+edad60plus <- dataset[which(dataset$Edad >= 60), ]
+
+
+dolor1OrMinor <- sum(table(which(dataset$DD == -1)))
+dolor1to20 <- sum(table(which(dataset$DD == 1)))
+dolor20plus <- sum(table(which(dataset$DD == 0)))
+
+#Parte 1
+
+pCEyAF <- antecedentesFamiliares / cantEpisodios
+pHIPyAF <- antecedentesFamiliares / presentaHipertension
+
+#Parte 2
+
+aHIP <- c(which(dataset$HTA > 0))
+aHIP
+ageRange <- c(dataset[aHIP, 3])
+ageRange
+promEdadyHip <- mean(ageRange, na.rm = FALSE)
+
+#Parte 4
+
+pCEyFumadores <- fumadores / cantEpisodios
+
+# Prob. Hipertensos y fuman
+hipYfum <- c(dataset[aHIP, "TBQ"])
+pHIPyTBQ <- sum(hipYfum) / presentaHipertension
+
+# Revascularizacion y Dolores
+revYdolor <- c(dataset[which(dataset$DD == 0), "SCApHR"])
+pSCApHRyDD20plus <- sum(revYdolor) / dolor20plus
+
+revYdolorA20 <- c(dataset[which(dataset$DD == 1), "SCApHR"])
+pSCApHRyDD20minus <- sum(revYdolorA20) / dolor1to20
+
+#Mayores 60 con Hiper
+mas60Yhip <- c(dataset[which(dataset$Edad >= 60), "HTA"])
+p60PlusYHTA <- sum(mas60Yhip) / edad60plus 
+
+#Menos 60 y Antecedentes
+menos60YAnt <- c(dataset[which(dataset$Edad < 60), "AHF"])
+p60menosYAnt <- sum(menos60YAnt) / edad1760
+
+#Dolor y ubicacion de este
+dolorYubic <- c(dataset[which(dataset$CD != 0), "UD"])
+
+```
+
+## Eventos cardiacos seccionados
+Agregar breve descripcion de lo seleccionado
+
+###Obesos con eventos
+Breve Descripcion
+
+```{r obesosCEve, include=FALSE, echo=TRUE}
+obesoCvasculares <- c(dataset[which(dataset$OBES == 1), "Evento"])    #arreglo de dataset
+
+library(plotrix)
+obesos <- barplot(prop.table(table(obesoCvasculares)), col=c("blue","red"),names.arg=c("Obesos Sin Eventos", "Obesos Con eventos"), legend.text=c("Sin Eventos","Con Eventos"), ylim=c(0,0.8), main="Obesos c/s Eventos")
+
+```
